@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>ARKANOID</title>
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="js/arkanoid.js" type="application/javascript"></script>
+  </head>
+  
+  <body>
+    <h1 align="center">ARKANOID THE GAME</h1>
+    <canvas id="canvas" width="1000" height="500" style="border:1px solid #dce4ec;display: block;margin: 0 auto">
+      Your Browser does not support Canvas. 
+    </canvas>
+    <br>
+    <div class="bs-component" style="width:1000px;margin:0 auto">
+      <div class="progress progress-striped active">
+        <div id="progbar" class="progress-bar progress-bar-warning" style="width: 0%"></div>
+      </div>
+    </div>
+    <div style="width:100%; height:100%; text-align:center">
+      <button class="btn btn-primary" align="center" id="pause" onclick="pause()" style="width:70">PAUSE</button>
+      <button class="btn btn-success" align="center" id="start" onclick="start()" style="width:70">START</button>
+      <button class="btn btn-info" align="center" id="restart" onclick="restart()" style="width:70">RESTART</button>
+    </div>
+    <br>
+    <p align="center"> Press Start or S to start playing</p>
+    <p align="center"> Press Pause/Resume or P to pause or resume the game </p>
+    <p align="center"> Press Restart or R to restart the game</p>
+  </body>
+  
+</html>
