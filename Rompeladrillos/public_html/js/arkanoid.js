@@ -36,6 +36,7 @@ var TotalB = NROWS * NCOLS;
 
 var rowcolors = ["#2c3e50", "#18bc9c", "#3498db", "#f39c12", "#e74c3c"];
 
+var ballcolor = rowcolors[0];
 
 var rightDown = false;
 var leftDown = false;
@@ -46,7 +47,7 @@ var isFinished = false;
 var isDead = false;
 
 var isSingle = false;
-var isDouble = false;
+var isColor = false;
 var isFlipped = false;
 
 var audio_blop = new Audio("audio/blop.mp3");
@@ -64,9 +65,9 @@ function onKeyDown(evt) {
         singleMode();
     if (evt.keyCode === 70) //f pressed
         flippedMode();
-    if (evt.keyCode === 68) //d pressed
-        doubleMode();
-    if (evt.keyCode === 82) //r pressed
+    if (evt.keyCode === 79) //o pressed
+        colorMode();
+    if (evt.keyCode === 82) //r presseds
         //restart();
     if (evt.keyCode === 67) //c pressed
         cont();
@@ -125,7 +126,7 @@ function check_collision_single() {
     colwidth = BRICKWIDTH + PADDING;
     row = Math.floor(y / rowheight);
     col = Math.floor(x / colwidth);
-    if (row < NROWS && row >= 0 && col >= 0 && bricks[row][col] === 1) {
+    if (row < NROWS && row >= 0 && col >= 0 && bricks[row][col] === 1 ) {
         audio_blop.play();
         dy = -dy;
         bricks[row][col] = 0;
@@ -154,6 +155,26 @@ function check_collision_flipped() {
     }
 }
 
+function check_collision_color() {
+    rowheight = BRICKHEIGHT + PADDING;
+    colwidth = BRICKWIDTH + PADDING;
+    row = Math.floor(y / rowheight);
+    col = Math.floor(x / colwidth);
+    if (row < NROWS && row >= 0 && col >= 0 && bricks[row][col] === 1 ) {
+        audio_blop.play();
+        dy = -dy;
+        if(ballcolor === rowcolors[row]){
+            bricks[row][col] = 0;
+            BrokenB++;
+        }
+        ballcolor = rowcolors[row];
+        document.getElementById("progbar").style.width = (BrokenB * 100) / TotalB + "%";
+    }
+    if (BrokenB === TotalB) {
+        gameFinished();
+    }
+}
+
 function gameFinished() {
     isFinished = true;
     clearInterval(intervalId);
@@ -172,7 +193,7 @@ function init() {
     ctx.font = "bold 55px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Press S for Single", WIDTH / 2, 170);
-    ctx.fillText("Press D for Double", WIDTH / 2, 250);
+    ctx.fillText("Press C for Double", WIDTH / 2, 250);
     ctx.fillText("Press F for Fliped", WIDTH / 2, 330);
     ctx.restore();
     intervalId = setInterval(draw, 10);
@@ -190,12 +211,12 @@ function draw(){
         init_bricks_Single();
         init_paddle_Single();
     }
-    if(isDouble){
-        //drawDouble();
+    if(isColor){
+        //drawColor();
         clearInterval(intervalId);
-        intervalId = setInterval(drawDouble, 10);
-        init_bricks_Double();
-        init_paddle_Double();
+        intervalId = setInterval(drawColor, 10);
+        init_bricks_Single();
+        init_paddle_Single();
     }
     if(isFlipped){
         //drawFlipped();
@@ -215,6 +236,57 @@ function drawSingle() {
         roundRect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
         ctx.restore();
         check_collision_single();
+        draw_bricks_single();
+
+        if (x > WIDTH - ballr) {
+            dx = -dx;
+            x = WIDTH - ballr;
+        }
+        if (x < ballr) {
+            dx = -dx;
+            x = ballr;
+        }
+        if (y < ballr) {
+            dy = -dy;
+            y = ballr;
+        } else if (y > HEIGHT - ballr) {
+            if (x > paddlex && x < paddlex + paddlew) {
+                audio_blop.play();
+                dx = 8 * ((x - (paddlex + paddlew / 2)) / paddlew);
+                dy = -dy;
+                y = HEIGHT - ballr;
+            }
+            else if (y + ballr > HEIGHT) {
+                clearInterval(intervalId);
+                isDead = true;
+                ctx.save();
+                ctx.font = "bold 55px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("You Lost! Press R to Restart", WIDTH / 2, HEIGHT / 2);
+                ctx.restore();
+            }
+        }
+
+        if (rightDown && paddlex < (WIDTH - 10))
+            paddlex += 5;
+        if (leftDown && paddlex > -90)
+            paddlex -= 5;
+
+        x += dx;
+        y += dy;
+    }
+}
+
+function drawColor() {
+    if (!isPaused && isStarted) {
+        clear();
+        ctx.save();
+        ctx.fillStyle = ballcolor;
+        circle(x, y, ballr);
+        //ctx.fillStyle = "#575050";
+        roundRect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+        ctx.restore();
+        check_collision_color();
         draw_bricks_single();
 
         if (x > WIDTH - ballr) {
@@ -401,8 +473,15 @@ function singleMode(){
     isSingle = true;
 }
 
-function doubleMode(){
-    isDouble = true;
+function colorMode(){
+    console.log("color");
+    if (!isStarted) {
+        isStarted = true;
+        audio_pop.play();
+        dx = 0;
+        dy = 4;
+    }
+    isColor = true;
     isFlipped = false;
     isSingle = false;
 }
