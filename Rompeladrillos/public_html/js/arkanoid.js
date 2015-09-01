@@ -1,7 +1,7 @@
 window.addEventListener("load", init, false);
 window.addEventListener("keydown", onKeyDown, false);
 window.addEventListener("keyup", onKeyUp, false);
-//window.addEventListener("mousemove", onMouseMove, false);
+window.addEventListener("mousemove", onMouseMove, false);
 
 var WIDTH = 1000;
 var HEIGHT = 500;
@@ -28,7 +28,7 @@ var NCOLS = 10;
 
 var BRICKWIDTH = (WIDTH / NCOLS) - 1;
 var BRICKHEIGHT = 20;
-var PADDING = 1;
+var PADDING = 0.5;
 var BrokenB = 0;
 var TotalB = NROWS * NCOLS;
 
@@ -80,7 +80,7 @@ function onKeyUp(evt) {
         leftDown = false;
 }
 
-/*
+
 function onMouseMove(evt) {
     var canvas = document.getElementById("canvas");
     var rect = canvas.getBoundingClientRect();
@@ -88,7 +88,7 @@ function onMouseMove(evt) {
     if (aux > 0 - paddlew + 10 && aux < WIDTH - 10) {
         paddlex = aux;
     }
-}*/
+}
 
 function init_paddle_Single() {
     paddleh = 10;
