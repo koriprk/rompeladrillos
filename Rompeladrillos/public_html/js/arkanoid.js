@@ -1,7 +1,7 @@
 window.addEventListener("load", init, false);
 window.addEventListener("keydown", onKeyDown, false);
 window.addEventListener("keyup", onKeyUp, false);
-window.addEventListener("mousemove", onMouseMove, false);
+//window.addEventListener("mousemove", onMouseMove, false);
 
 var WIDTH = 1000;
 var HEIGHT = 500;
@@ -25,8 +25,6 @@ var bricks;
 
 var NROWS = 5;
 var NCOLS = 10;
-
-
 
 var BRICKWIDTH = (WIDTH / NCOLS) - 1;
 var BRICKHEIGHT = 20;
@@ -54,6 +52,8 @@ var audio_blop = new Audio("audio/blop.mp3");
 var audio_pop = new Audio("audio/pop.mp3");
 var audio_pling = new Audio("audio/pling.mp3");
 
+var score;
+
 function onKeyDown(evt) {
     if (evt.keyCode === 39)
         rightDown = true;
@@ -68,7 +68,7 @@ function onKeyDown(evt) {
     if (evt.keyCode === 79) //o pressed
         colorMode();
     if (evt.keyCode === 82) //r presseds
-        //restart();
+        restart();
     if (evt.keyCode === 67) //c pressed
         cont();
 }
@@ -80,6 +80,7 @@ function onKeyUp(evt) {
         leftDown = false;
 }
 
+/*
 function onMouseMove(evt) {
     var canvas = document.getElementById("canvas");
     var rect = canvas.getBoundingClientRect();
@@ -87,7 +88,7 @@ function onMouseMove(evt) {
     if (aux > 0 - paddlew + 10 && aux < WIDTH - 10) {
         paddlex = aux;
     }
-}
+}*/
 
 function init_paddle_Single() {
     paddleh = 10;
@@ -131,6 +132,7 @@ function check_collision_single() {
         dy = -dy;
         bricks[row][col] = 0;
         BrokenB++;
+        score += 10;
         document.getElementById("progbar").style.width = (BrokenB * 100) / TotalB + "%";
     }
     if (BrokenB === TotalB) {
@@ -148,6 +150,7 @@ function check_collision_flipped() {
         dy = -dy;
         bricks[25-row][col] = 0;
         BrokenB++;
+        score += 10;
         document.getElementById("progbar").style.width = (BrokenB * 100) / TotalB + "%";
     }
     if (BrokenB === TotalB) {
@@ -166,6 +169,9 @@ function check_collision_color() {
         if(ballcolor === rowcolors[row]){
             bricks[row][col] = 0;
             BrokenB++;
+            score += 10;
+        }else{
+            score += 5;
         }
         ballcolor = rowcolors[row];
         document.getElementById("progbar").style.width = (BrokenB * 100) / TotalB + "%";
@@ -193,14 +199,14 @@ function init() {
     ctx.font = "bold 55px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Press S for Single", WIDTH / 2, 170);
-    ctx.fillText("Press C for Double", WIDTH / 2, 250);
-    ctx.fillText("Press F for Fliped", WIDTH / 2, 330);
+    ctx.fillText("Press F for Fliped", WIDTH / 2, 250);
+    ctx.fillText("Press O for Color", WIDTH / 2, 330);
     ctx.restore();
+    score = 0;
+    isSingle = false;
+    isColor = false;
+    isFlipped = false;
     intervalId = setInterval(draw, 10);
-    //init_paddle();
-    //init_bricks();
-    //draw(); 
-
 }
 
 function draw(){
@@ -217,6 +223,7 @@ function draw(){
         intervalId = setInterval(drawColor, 10);
         init_bricks_Single();
         init_paddle_Single();
+        ballcolor = "#575050";
     }
     if(isFlipped){
         //drawFlipped();
@@ -234,6 +241,10 @@ function drawSingle() {
         ctx.fillStyle = "#575050";
         circle(x, y, ballr);
         roundRect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+        ctx.fillStyle = "Black";
+        ctx.font = "bold 20px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Score: "+score, 930,480 );
         ctx.restore();
         check_collision_single();
         draw_bricks_single();
@@ -285,6 +296,10 @@ function drawColor() {
         circle(x, y, ballr);
         //ctx.fillStyle = "#575050";
         roundRect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+        ctx.fillStyle = "Black";
+        ctx.font = "bold 20px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Score: "+score, 930,480 );
         ctx.restore();
         check_collision_color();
         draw_bricks_single();
@@ -335,6 +350,10 @@ function drawFlipped() {
         ctx.fillStyle = "#575050";
         circle(x, y, ballr);
         roundRect(paddlex, 0, paddlew, paddleh);
+        ctx.fillStyle = "Black";
+        ctx.font = "bold 20px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Score: "+score, 930,20 );
         ctx.restore();
         check_collision_flipped();
         draw_bricks_double();
@@ -468,7 +487,7 @@ function singleMode(){
         dx = 0;
         dy = 4;
     }
-    isDouble = false;
+    isColor = false;
     isFlipped = false;
     isSingle = true;
 }
@@ -493,52 +512,49 @@ function flippedMode(){
         dx = 0;
         dy = -4;
     }
-    isDouble = false;
+    isColor = false;
     isFlipped = true;
     isSingle = false;
 }
 
-/*
 function cont() {
     if (isDead) {
         isDead = false;
         x = WIDTH / 2;
         y = HEIGHT / 2;
         dx = 0;
-        dy = 4;
-        intervalId = setInterval(draw, 10);
+        if(isFlipped){
+            dy = -4;
+            intervalId = setInterval(drawFlipped, 10);
+            init_paddle_Flipped()();
+            score -= 50;
+        }else if(isSingle){
+            dy = 4;
+            intervalId = setInterval(drawSingle, 10);
+            init_paddle_Single();
+            score -= 50;
+        }else if(isColor){
+            dy = 4;
+            intervalId = setInterval(drawColor, 10);
+            init_paddle_Single();
+            score -= 50;
+        }
+        //intervalId = setInterval(draw, 10);
     }
 }
 
 function restart() {
-    if (isFinished) {
-        clear();
-        clearInterval(intervalId);
-        isFinished = false;
-        isStarted = false;
-        BrokenB = 0;
-        document.getElementById("progbar").style.width = "0%";
-        x = WIDTH / 2;
-        y = HEIGHT / 2;
-        init();
-        return;
-    }
+    clear();
+    clearInterval(intervalId);
+    isFinished = false;
+    isStarted = false;
+    BrokenB = 0;
+    document.getElementById("progbar").style.width = "0%";
+    x = WIDTH / 2;
+    y = HEIGHT / 2;
+    init();
     if (isPaused) {
         isPaused = false;
         document.getElementById("pause").innerHTML = "PAUSE";
     }
-    paddlex = (WIDTH / 2) - (paddlew / 2);
-    isDead = false;
-    isStarted = true;
-    clearInterval(intervalId);
-    audio_pop.play();
-    x = WIDTH / 2;
-    y = HEIGHT / 2;
-    init_bricks();
-    dx = 0;
-    dy = 4;
-    BrokenB = 0;
-    document.getElementById("progbar").style.width = "0%";
-    intervalId = setInterval(draw, 10);
 }
-*/
