@@ -188,6 +188,8 @@ function gameFinished() {
     ctx.font = "bold 55px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("GAME FINISHED!", WIDTH / 2, HEIGHT / 2);
+    ctx.font = "bold 40px sans-serif";
+    ctx.fillText("SCORE: "+score , WIDTH/2, 350);
     isStarted = false;
 }
 
