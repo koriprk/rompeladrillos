@@ -123,8 +123,8 @@ function init_bricks_Flipped(){
 }
 
 function check_collision_single() {
-    rowheight = BRICKHEIGHT + PADDING;
-    colwidth = BRICKWIDTH + PADDING;
+    rowheight = BRICKHEIGH;//T + PADDING;
+    colwidth = BRICKWIDTH;// + PADDING;
     row = Math.floor(y / rowheight);
     col = Math.floor(x / colwidth);
     if (row < NROWS && row >= 0 && col >= 0 && bricks[row][col] === 1 ) {
@@ -141,8 +141,8 @@ function check_collision_single() {
 }
 
 function check_collision_flipped() {
-    rowheight = BRICKHEIGHT - PADDING;
-    colwidth = BRICKWIDTH + PADDING;
+    rowheight = BRICKHEIGHT;// - PADDING;
+    colwidth = BRICKWIDTH;// + PADDING;
     row = Math.floor(y / rowheight);
     col = Math.floor(x / colwidth);
     if (row > 20 && row <= 25 && col >= 0 && bricks[25-row][col] === 1) {
@@ -159,8 +159,8 @@ function check_collision_flipped() {
 }
 
 function check_collision_color() {
-    rowheight = BRICKHEIGHT + PADDING;
-    colwidth = BRICKWIDTH + PADDING;
+    rowheight = BRICKHEIGHT;// + PADDING;
+    colwidth = BRICKWIDTH;// + PADDING;
     row = Math.floor(y / rowheight);
     col = Math.floor(x / colwidth);
     if (row < NROWS && row >= 0 && col >= 0 && bricks[row][col] === 1 ) {
