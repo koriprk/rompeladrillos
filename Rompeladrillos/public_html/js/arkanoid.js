@@ -123,7 +123,7 @@ function init_bricks_Flipped(){
 }
 
 function check_collision_single() {
-    rowheight = BRICKHEIGH;//T + PADDING;
+    rowheight = BRICKHEIGHT;// + PADDING;
     colwidth = BRICKWIDTH;// + PADDING;
     row = Math.floor(y / rowheight);
     col = Math.floor(x / colwidth);
@@ -277,6 +277,9 @@ function drawSingle() {
                 ctx.textAlign = "center";
                 ctx.fillText("You Lost! Press R to Restart", WIDTH / 2, HEIGHT / 2);
                 ctx.restore();
+                showRestartBtn(true);
+                showContinueBtn(true);
+                showPauseBtn(false);
             }
         }
 
@@ -291,7 +294,7 @@ function drawSingle() {
 }
 
 function drawColor() {
-    if (!isPaused && isStarted) {
+    if (!isPaused && isStarted && !isDead) {
         clear();
         ctx.save();
         ctx.fillStyle = ballcolor;
@@ -332,6 +335,9 @@ function drawColor() {
                 ctx.textAlign = "center";
                 ctx.fillText("You Lost! Press R to Restart", WIDTH / 2, HEIGHT / 2);
                 ctx.restore();
+                showRestartBtn(true);
+                showContinueBtn(true);
+                showPauseBtn(false);
             }
         }
 
@@ -386,6 +392,9 @@ function drawFlipped() {
                 ctx.textAlign = "center";
                 ctx.fillText("You Lost! Press R to Restart", WIDTH / 2, HEIGHT / 2);
                 ctx.restore();
+                showRestartBtn(true);
+                showContinueBtn(true);
+                showPauseBtn(false);
             }            
         }
 
@@ -459,20 +468,22 @@ function clear() {
 
 function pause() {
     audio_pop.play();
-    if (isPaused) {
-        isPaused = false;
-        document.getElementById("pause").innerHTML = "PAUSE";
-    } else {
-        isPaused = true;
-        ctx.save();
-        ctx.font = "bold 55px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("Game Paused!", WIDTH / 2, HEIGHT / 2);
-        ctx.restore();
-        document.getElementById("pause").innerHTML = "RESUME";
+    if(isStarted && !isDead){
+        if (isPaused) {
+            isPaused = false;
+            document.getElementById("pause").innerHTML = "PAUSE";
+        } else {
+            isPaused = true;
+            ctx.save();
+            ctx.font = "bold 55px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("Game Paused!", WIDTH / 2, HEIGHT / 2);
+            ctx.restore();
+            document.getElementById("pause").innerHTML = "RESUME";
+        }
     }
 }
-
+/*
 function start() {
     if (!isStarted) {
         isStarted = true;
@@ -480,7 +491,7 @@ function start() {
         dx = 0;
         dy = 4;
     }
-}
+}*/
 
 function singleMode(){
     if (!isStarted) {
@@ -488,6 +499,8 @@ function singleMode(){
         audio_pop.play();
         dx = 0;
         dy = 4;
+        showPauseBtn(true);
+        showRestartBtn(true);
     }
     isColor = false;
     isFlipped = false;
@@ -501,6 +514,8 @@ function colorMode(){
         audio_pop.play();
         dx = 0;
         dy = 4;
+        showPauseBtn(true);
+        showRestartBtn(true);
     }
     isColor = true;
     isFlipped = false;
@@ -513,6 +528,8 @@ function flippedMode(){
         audio_pop.play();
         dx = 0;
         dy = -4;
+        showPauseBtn(true);
+        showRestartBtn(true);
     }
     isColor = false;
     isFlipped = true;
@@ -541,6 +558,9 @@ function cont() {
             init_paddle_Single();
             score -= 50;
         }
+        showContinueBtn(false);
+        showPauseBtn(true);
+        showRestartBtn(true);
         //intervalId = setInterval(draw, 10);
     }
 }
@@ -555,8 +575,27 @@ function restart() {
     x = WIDTH / 2;
     y = HEIGHT / 2;
     init();
+    isDead = false;
     if (isPaused) {
         isPaused = false;
         document.getElementById("pause").innerHTML = "PAUSE";
     }
+    showPauseBtn(false);
+    showRestartBtn(false);
+    showContinueBtn(false);
+}
+
+function showPauseBtn(show){
+    if (show) document.getElementById("pause").style.display = "inline";
+    else document.getElementById("pause").style.display = "none";
+}
+
+function showRestartBtn(show){
+    if (show) document.getElementById("restart").style.display = "inline";
+    else document.getElementById("restart").style.display = "none";
+}
+
+function showContinueBtn(show){
+    if (show) document.getElementById("continue").style.display = "inline";
+    else document.getElementById("continue").style.display = "none";
 }
